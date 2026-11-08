@@ -183,7 +183,7 @@ private fun VoterApp(dao: VoterDao) {
                                 value = candidateInput,
                                 onValueChange = { candidateInput = it },
                                 label = { Text("Candidate Name") },
-                                modifier = modifier,
+                                modifier = Modifier.weight(1f),
                                 singleLine = true
                             )
                             Button(onClick = {
@@ -351,7 +351,7 @@ private fun VoterCard(
 private fun AttendanceChoice(label: String, name: String, color: Color, selected: Boolean, modifier: Modifier = Modifier, onClick: () -> Unit) {
     Button(
         onClick = onClick,
-        modifier = Modifier.weight(1f),
+        modifier = modifier,
         colors = ButtonDefaults.buttonColors(
             containerColor = if (selected) color else color.copy(alpha = 0.16f),
             contentColor = if (selected) Color.White else color
