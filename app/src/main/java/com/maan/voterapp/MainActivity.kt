@@ -1,6 +1,7 @@
 package com.maan.voterapp
 
 import android.os.Bundle
+import android.content.Context
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -22,7 +23,7 @@ class MainActivity : ComponentActivity() {
     private val dao by lazy { VoterDatabase.get(this).dao() }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContent { MaterialTheme { VoterApp(dao, ::importExcel) } }
+        setContent { MaterialTheme { VoterApp(dao, ::importExcel, this) } }
     }
     private fun importExcel(uri: android.net.Uri, done: (String) -> Unit) {
         lifecycleScope.launch {
@@ -37,13 +38,14 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-private fun VoterApp(dao: VoterDao, importExcel: (android.net.Uri, (String) -> Unit) -> Unit) {
+private fun VoterApp(dao: VoterDao, importExcel: (android.net.Uri, (String) -> Unit) -> Unit, context: Context) {
     var page by remember { mutableStateOf("HOME") }
     var mode by remember { mutableStateOf("CHECK") }
     var rows by remember { mutableStateOf(emptyList<Voter>()) }
     var wards by remember { mutableStateOf(emptyList<String>()) }
-    var selectedWard by remember { mutableStateOf("ALL") }
-    var candidates by remember { mutableStateOf(listOf<String>()) }
+    val prefs = remember { context.getSharedPreferences("voter_app_state", Context.MODE_PRIVATE) }
+    var selectedWard by remember { mutableStateOf(prefs.getString("last_ward", "ALL") ?: "ALL") }
+    var candidates by remember { mutableStateOf(prefs.getStringSet("candidates", emptySet())?.toList() ?: emptyList()) }
     var candidateInput by remember { mutableStateOf("") }
     var message by remember { mutableStateOf("") }
     var loading by remember { mutableStateOf(false) }
@@ -53,6 +55,8 @@ private fun VoterApp(dao: VoterDao, importExcel: (android.net.Uri, (String) -> U
     }
     fun refreshNow() { scope.launch { refresh(dao) { r,w -> rows=r; wards=w } } }
     LaunchedEffect(Unit) { refreshNow() }
+    LaunchedEffect(candidates) { prefs.edit().putStringSet("candidates", candidates.toSet()).apply() }
+    LaunchedEffect(selectedWard) { prefs.edit().putString("last_ward", selectedWard).apply() }
     val shown = if (selectedWard == "ALL") rows else rows.filter { it.ward == selectedWard }
     val green = shown.count { it.attendance == "GREEN" }
     val yellow = shown.count { it.attendance == "YELLOW" }
