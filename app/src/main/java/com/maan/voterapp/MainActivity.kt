@@ -183,7 +183,7 @@ private fun VoterApp(dao: VoterDao) {
                                 value = candidateInput,
                                 onValueChange = { candidateInput = it },
                                 label = { Text("Candidate Name") },
-                                modifier = Modifier.weight(1f),
+                                modifier = modifier,
                                 singleLine = true
                             )
                             Button(onClick = {
@@ -323,9 +323,9 @@ private fun VoterCard(
             Text("EPIC: ${voter.epic.ifBlank { "—" }}     Ward: ${voter.ward}", style = MaterialTheme.typography.bodySmall)
             if (!counting) {
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    AttendanceChoice("✓", "Green", Color(0xFF168447), voter.attendance == "GREEN") { onAttendance("GREEN") }
-                    AttendanceChoice("✓", "Yellow", Color(0xFFB8860B), voter.attendance == "YELLOW") { onAttendance("YELLOW") }
-                    AttendanceChoice("✕", "Red", Color(0xFFC62828), voter.attendance == "RED") { onAttendance("RED") }
+                    AttendanceChoice("✓", "Green", Color(0xFF168447), voter.attendance == "GREEN", Modifier.weight(1f)) { onAttendance("GREEN") }
+                    AttendanceChoice("✓", "Yellow", Color(0xFFB8860B), voter.attendance == "YELLOW", Modifier.weight(1f)) { onAttendance("YELLOW") }
+                    AttendanceChoice("✕", "Red", Color(0xFFC62828), voter.attendance == "RED", Modifier.weight(1f)) { onAttendance("RED") }
                 }
             } else {
                 Row(Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(5.dp)) {
@@ -348,7 +348,7 @@ private fun VoterCard(
 }
 
 @Composable
-private fun AttendanceChoice(label: String, name: String, color: Color, selected: Boolean, onClick: () -> Unit) {
+private fun AttendanceChoice(label: String, name: String, color: Color, selected: Boolean, modifier: Modifier = Modifier, onClick: () -> Unit) {
     Button(
         onClick = onClick,
         modifier = Modifier.weight(1f),
