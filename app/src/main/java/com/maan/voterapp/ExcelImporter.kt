@@ -17,7 +17,7 @@ object ExcelImporter {
             fun col(vararg names: String) = names.firstNotNullOfOrNull { headers[norm(it)] } ?: -1
             val serialCol = col("serial number", "serial", "sno", "क्रमांक")
             val nameCol = col("voter name", "name", "मतदाता का नाम")
-            val relationCol = col("father name", "mother name", "husband name", "relation", "पिता का नाम", "माता का नाम", "पति का नाम")
+            val relationCols = listOf("father name", "mother name", "husband name", "relation", "पिता का नाम", "माता का नाम", "पति का नाम").mapNotNull { headers[norm(it)] }
             val epicCol = col("epic number", "epic", "voter id")
             val wardCol = col("ward number", "ward", "वार्ड नंबर")
             require(nameCol >= 0 && wardCol >= 0) { "Excel में Voter Name और Ward Number कॉलम जरूरी हैं" }
@@ -30,7 +30,7 @@ object ExcelImporter {
                 val ward = value(row, wardCol)
                 if (name.isBlank() || ward.isBlank()) continue
                 result += Voter(serial = value(row, serialCol).ifBlank { i.toString() }, name = name,
-                    relation = value(row, relationCol), epic = value(row, epicCol), ward = ward)
+                    relation = relationCols.asSequence().map { value(row, it) }.firstOrNull { it.isNotBlank() }.orEmpty(), epic = value(row, epicCol), ward = ward)
             }
             workbook.close()
             require(result.isNotEmpty()) { "Excel में कोई वैध voter record नहीं मिला" }
