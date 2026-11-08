@@ -43,7 +43,7 @@ object ExcelImporter {
         val fatherCol = column("father name", "पिता का नाम")
         val motherCol = column("mother name", "माता का नाम")
         val husbandCol = column("husband name", "पति का नाम")
-        val relationCol = column("relation", "father/mother/husband name", "पिता/माता/पति का नाम")
+        val relationCol = column("relation", "father/mother/husband name", "father name / mother name / husband name", "father name/mother name/husband name", "पिता/माता/पति का नाम")
         val epicCol = column("epic number", "epic", "voter id", "epic no")
         val wardCol = column("ward number", "ward", "वार्ड नंबर", "वार्ड")
         require(nameCol >= 0 && wardCol >= 0) {
